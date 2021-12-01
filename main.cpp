@@ -7,8 +7,6 @@ Given a set of identification numbers, use a hash function to assign
 them to memory locations where there are k memory locations.
 */
 
-// sekarang cuma bisa sampe 352316021
-
 // Function to count the mod
 int hashFunction(long long int numbers, int mod)
 {
