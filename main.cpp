@@ -7,8 +7,10 @@ Given a set of identification numbers, use a hash function to assign
 them to memory locations where there are k memory locations.
 */
 
+// sekarang cuma bisa sampe 352316021
+
 // Function to count the mod
-int hashFunction(int numbers, int mod)
+int hashFunction(long long int numbers, int mod)
 {
     int result = numbers % mod;
 
@@ -19,12 +21,12 @@ int hashFunction(int numbers, int mod)
 void func(int keys, int mod)
 {
     int array[keys]; // Allocate the array
-    int number;
+    long long int number;
 
     // Loop to input and transfer the input to array
     for (int i = 0; i < keys; i++)
     {
-        cout << "Input numbers: ";
+        cout << "Input identification numbers: ";
         cin >> number;
         int temp = hashFunction(number, mod); // Searching the mod and store in temp var
         array[i] = temp;
