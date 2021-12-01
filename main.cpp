@@ -7,6 +7,7 @@ Given a set of identification numbers, use a hash function to assign
 them to memory locations where there are k memory locations.
 */
 
+// Function to count the mod
 int hashFunction(int numbers, int mod)
 {
     int result = numbers % mod;
@@ -14,34 +15,46 @@ int hashFunction(int numbers, int mod)
     return result;
 }
 
-int main()
+// Function to ask input and give output
+void func(int keys, int mod)
 {
-    int inputNumber, inputKeys, mod, temp;
+    int array[keys]; // Allocate the array
+    int number;
 
-    cout << "Input keys: ";
-    cin >> inputKeys;
-
-    cout << "Input the mod: ";
-    cin >> mod;
-
-    int arr[inputKeys];
-
-    // For Input
-    for (int i = 0; i < inputKeys; i++)
+    // Loop to input and transfer the input to array
+    for (int i = 0; i < keys; i++)
     {
         cout << "Input numbers: ";
-        cin >> inputNumber;
-        temp = hashFunction(inputNumber, mod);
-        arr[i] = temp;
-        // inputKeys++;
+        cin >> number;
+        int temp = hashFunction(number, mod); // Searching the mod and store in temp var
+        array[i] = temp;
     }
 
-    // For Output
-    cout << "After hash function: " << endl;
-    for (int i = 0; i < inputKeys; i++)
+    // Printing out the array after being processed in hash function
+    cout << endl
+         << "After hash function is implemented: " << endl;
+    for (int i = 0; i < keys; i++)
     {
-        cout << arr[i] << endl;
+        cout << "Memory location number (" << i << "): " << array[i] << endl;
     }
+    return;
+}
+
+int main()
+{
+    int inputKeys, inputMod;
+
+    // Input how many keys
+    cout << "Input keys (memory locations length): ";
+    cin >> inputKeys;
+
+    // Input mod
+    cout << "Input the mod: ";
+    cin >> inputMod;
+    cout << endl;
+
+    // Use the function
+    func(inputKeys, inputMod);
 
     return 0;
 }
