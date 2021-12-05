@@ -1,4 +1,4 @@
-#include <iostream>
+#include <bits/stdc++.h>
 
 using namespace std;
 
@@ -7,54 +7,75 @@ Given a set of identification numbers, use a hash function to assign
 them to memory locations where there are k memory locations.
 */
 
-// Function to count the mod
-int hashFunction(long long int numbers, int mod)
-{
-    int result = numbers % mod;
+// h(k) = k mod m
+// k is the input, m is the memory length
 
-    return result;
+class HashFunction
+{
+public:
+    int hash(long long int numbers, int memoryLength);
+    void input();
+    void output();
+
+private:
+    long long int numbers;
+    int memoryLength;
+    int memoryLoc;
+    int arr[];
+};
+
+int HashFunction::hash(long long int numbers, int memoryLength)
+{
+    memoryLoc = numbers % memoryLength;
+
+    return memoryLoc; // is the location in the memory stored in array
 }
 
-// Function to ask input and give output
-void func(int keys, int mod)
+void HashFunction::input()
 {
-    int array[keys]; // Allocate the array
-    long long int number;
+    cout << "Input the memory length: ";
+    cin >> memoryLength;
 
-    // Loop to input and transfer the input to array
-    for (int i = 0; i < keys; i++)
-    {
-        cout << "Input identification numbers: ";
-        cin >> number;
-        int temp = hashFunction(number, mod); // Searching the mod and store in temp var
-        array[i] = temp;
-    }
+    arr[memoryLength + 1];
 
-    // Printing out the array after being processed in hash function
     cout << endl
-         << "After hash function is implemented: " << endl;
-    for (int i = 0; i < keys; i++)
+         << "Input -1 to terminate the loop." << endl
+         << endl;
+
+    for (size_t i = 0; i < memoryLength; i++)
     {
-        cout << "Memory location number (" << i << "): " << array[i] << endl;
+        cout << "Input the identification numbers: ";
+        cin >> numbers;
+
+        if (numbers != -1)
+        {
+            // storing input numbers to the given memory
+            arr[hash(numbers, memoryLength)] = numbers;
+        }
+        else
+        {
+            break;
+        }
     }
-    return;
+}
+
+void HashFunction::output()
+{
+    cout << endl
+         << "Output:" << endl;
+    for (size_t i = 0; i < memoryLength; i++)
+    {
+        // Printing the output
+        cout << "Memory Location (" << i << "): " << arr[i] << endl;
+    }
 }
 
 int main()
 {
-    int inputKeys, inputMod;
+    HashFunction func;
 
-    // Input how many keys
-    cout << "Input keys (memory locations length): ";
-    cin >> inputKeys;
-
-    // Input mod
-    cout << "Input the mod: ";
-    cin >> inputMod;
-    cout << endl;
-
-    // Use the function
-    func(inputKeys, inputMod);
+    func.input();
+    func.output();
 
     return 0;
 }
