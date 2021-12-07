@@ -9,11 +9,11 @@ PROBLEM:
 
 Double hashing is used to resolve hash collisions.
 
-*numbers is the identification number input, m is the number of memory locations*
+*k is the identification number input, m is the number of memory locations*
 
-first hash function -> h1(numbers) = numbers % m | NOTE: number of memory location (m) must be prime
-second hash function -> h2(numbers, q) = q - (numbers % q) | NOTE: 'q' can be prime or not, but must be less than 'm'
-double hashing -> (h1(numbers) + i * h2(numbers)) % m | NOTE: i is incremented until a free spot is found
+first hash function -> h1(k) = k % m | NOTE: number of memory location (m) must be prime
+second hash function -> h2(k, q) = q - (k % q) | NOTE: q must be less than 'm'
+double hashing -> (h1(k) + i * h2(k)) % m | NOTE: i is incremented until a free spot is found or when it reaches m
 
 if no collision occurs, then first hash function is used
 */
@@ -21,55 +21,52 @@ if no collision occurs, then first hash function is used
 class HashFunction
 {
 public:
-    long long numbers;
-    int memoryLength;
-    int primeNum;
-    int arrSize;
+    long long k;
+    long long memoryLength;
+    long long qValue;
+    long long arrSize;
     long long *arr;
-
-    HashFunction(int k, int prime)
+    
+    HashFunction(long long k, long long q)
     {
         this->arr = new long long[k];
         this->arrSize = 0;
         this->memoryLength = k;
-        this->primeNum = prime;
-        for (int i = 0; i < memoryLength; i++)
+        this->qValue = q;
+        for (long long i = 0; i < memoryLength; i++)
             arr[i] = -1;
     }
 
     bool memoryIsFull();
-    int firstHash(long long numbers);
-    int secondHash(long long numbers);
-    void insert(long long numbers);
+    long long firstHash(long long k);
+    long long secondHash(long long k);
+    void insert(long long k);
     void locate(long long id);
     void printArray();
-    int findPrime(int memoryLength);
     void atIndex();
 };
 
 // find the
-int HashFunction::findPrime(int memoryLength)
-{
-    if (memoryLength & 1)
-        memoryLength -= 2;
-    else
-        memoryLength--;
+bool checkPrime(long long m)
+{   
+    bool isPrime = true;
+    if(m <= 1)
+        return false;
+    
+    if(m == 2)
+        return true;
 
-    int i, j;
-    for (i = memoryLength; i >= 2; i -= 2)
-    {
-        if (i % 2 == 0)
-            continue;
-        for (j = 3; j <= sqrt(i); j += 2)
-        {
-            if (i % j == 0)
-                break;
-        }
-        if (j > sqrt(i))
-            return i;
+    if(m % 2 == 0) {
+        return false;
     }
 
-    return 2;
+    for(long long i = 3; i <= sqrt(m); i+=2) {
+        if(m % i == 0) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 //function to check if memory is full
@@ -78,41 +75,41 @@ bool HashFunction::memoryIsFull()
     return (arrSize == memoryLength);
 }
 
-//first hash function -> h1(numbers) = numbers % k
-int HashFunction::firstHash(long long numbers)
+//first hash function -> h1(k) = k % k
+long long HashFunction::firstHash(long long k)
 {
-    return (numbers % memoryLength);
+    return (k % memoryLength);
 }
 
-//second hash function -> h2(numbers, prime) = prime - (numbers % prime)
-int HashFunction::secondHash(long long numbers)
+//second hash function -> h2(k, q) = q - (k % q)
+long long HashFunction::secondHash(long long k)
 {
-    return (primeNum - (numbers % primeNum));
+    return (qValue - (k % qValue));
 }
 
 //insert function utilizing hash functions and double hashing if collision occurs
-void HashFunction::insert(long long numbers)
+void HashFunction::insert(long long k)
 {
     if (memoryIsFull())
         return;
 
-    int tempLoc1 = firstHash(numbers);
+    long long tempLoc1 = firstHash(k);
 
     //if there is collision, use double hashing
     if (arr[tempLoc1] != -1)
     {
-        int tempLoc2 = secondHash(numbers);
+        long long tempLoc2 = secondHash(k);
 
-        int i = 1;
+        long long i = 1;
         while (true)
         {
-            //double hashing -> (h1(numbers) + i * h2(numbers)) % k
+            //double hashing -> (h1(k) + i * h2(k)) % k
 
-            int newMemoryLoc = (tempLoc1 + i * tempLoc2) % memoryLength;
+            long long newMemoryLoc = (tempLoc1 + i * tempLoc2) % memoryLength;
 
             if (arr[newMemoryLoc] == -1)
             {
-                arr[newMemoryLoc] = numbers;
+                arr[newMemoryLoc] = k;
                 break;
             }
 
@@ -122,7 +119,7 @@ void HashFunction::insert(long long numbers)
 
     //if there is no collision
     else if (arr[tempLoc1] == -1)
-        arr[tempLoc1] = numbers;
+        arr[tempLoc1] = k;
 
     arrSize++;
 }
@@ -130,7 +127,7 @@ void HashFunction::insert(long long numbers)
 //function to print memory location contents
 void HashFunction::printArray()
 {
-    for (int i = 0; i < memoryLength; i++)
+    for (long long i = 0; i < memoryLength; i++)
     {
         if (arr[i] != -1)
         {
@@ -144,11 +141,11 @@ void HashFunction::printArray()
 //function to locate an id number
 void HashFunction::locate(long long id)
 {
-    int tempLoc1 = firstHash(id);
-    int tempLoc2 = secondHash(id);
+    long long tempLoc1 = firstHash(id);
+    long long tempLoc2 = secondHash(id);
 
-    int i = 0;
-    int count = 0;
+    long long i = 0;
+    long long count = 0;
     while (arr[(tempLoc1 + i * tempLoc2) % memoryLength] != id)
     {
 
@@ -167,8 +164,8 @@ void HashFunction::locate(long long id)
 
 void HashFunction::atIndex()
 {
-    int x;
-    cout << "Find data in index number (start with 0): ";
+    long long x;
+    cout << "Find data in index number (starting with 0): ";
     cin >> x;
     cout << "In index " << x << ", the data found is: " << arr[x];
     return;
@@ -177,25 +174,48 @@ void HashFunction::atIndex()
 //driver function
 int main()
 {
-    int k, prime;
-    long long numbers;
+    long long m;
+    long long k;
 
-    //input k (memory length) and prime number for double hashing
-    cout << "Input memory length: ";
-    cin >> k;
-    // cout << "Input prime number for double hashing: ";
-    // cin >> prime;
+    //input k (memory length) and q number for double hashing
+        cout << "Input number of memory locations (must be a prime number greater than 2): ";
+        cin >> m;
+        
+        while(!checkPrime(m) || m <= 2) {
+            cout << endl;
 
-    HashFunction func = HashFunction(k, prime);
+            if(!checkPrime(m))
+                cout << "Not a prime number!!" << endl;
+            if(m <= 2)
+                cout << "Must be greater than 2!!" << endl;
+            cout << "Input number of memory locations (must be a prime number greater than 2): ";
+            cin >> m;
+        }
+
+    // cout << "Input q number for double hashing: ";
+    // cin >> q;
+
+    long long q = m - 1;
+    HashFunction func = HashFunction(m, q);
+
+    cout << endl;
 
     //input the set of identification numbers
-    cout << endl
-         << "Input identification numbers (input -1 if you want to end): " << endl;
-    do
+    long long max;
+    cout << "How many ID numbers do you want to input? ";
+    cin >> max;
+
+    long long n = 0;
+    if(max > m)
+        n = m;
+    else n = max;
+
+    for(long long i = 0; i < n; i++)
     {
-        cin >> numbers;
-        func.insert(numbers);
-    } while (numbers != -1);
+        cout << "Input an ID number: ";
+        cin >> k;
+        func.insert(k);
+    }
 
     //memory location output
     cout << endl
@@ -205,7 +225,7 @@ int main()
 
     //if user wants to locate an ID number
     char option;
-    cout << "Do you want to find an ID number? (Y/N) ";
+    cout << "Do you want to find an ID number? (Y/N): ";
     cin >> option;
 
     long long id;
@@ -217,21 +237,21 @@ int main()
         func.locate(id);
 
         cout << endl
-             << "Do you want to find another ID number? (Y/N) ";
+             << "Do you want to find another ID number? (Y/N): ";
         cin >> option;
     }
 
-    cout << "Do you want to find the data in index? (Y/N) ";
+    cout << endl << "Do you want to find the data in index? (Y/N): ";
     cin >> option;
     while (option == 'Y' || option == 'y')
     {
         func.atIndex();
-        cout << endl
-             << "Do you want to find another data in index? (Y/N) ";
+        cout << endl << endl
+             << "Do you want to find another data in index? (Y/N): ";
         cin >> option;
     }
 
-    cout << "=======END=======";
+    cout << endl << "=======END=======";
 
     return 0;
 }
